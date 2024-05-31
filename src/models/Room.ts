@@ -32,6 +32,10 @@ export const findAvailableRooms = async () => {
   });
 };
 
+export const findRoomById = async (id: number) => {
+  return await prisma.room.findUnique({ where: { id } });
+}
+
 export const findOccupiedRooms = async () => {
   return await prisma.room.findMany({
     where: {
@@ -51,19 +55,3 @@ export const updateRoom = async (roomNumber: number, data: Partial<RoomDocument>
   });
 };
 
-export const initializeRooms = async () => {
-  const rooms: RoomDocument[] = Array.from({ length: 15 }, (_, i) => ({
-    roomNumber: i + 1,
-    isOccupied: false,
-    price: 100, // Set a default price
-  }));
-
-  for (const room of rooms) {
-    // Check if the room already exists
-    const existingRoom = await findRoomByNumber(room.roomNumber);
-    if (!existingRoom) {
-      // If the room doesn't exist, create it
-      await createRoom(room);
-    }
-  }
-};

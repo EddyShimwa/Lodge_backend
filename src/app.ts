@@ -7,8 +7,7 @@ import dotenv from 'dotenv'
 import usersRoutes from './routes/usersRoutes'; 
 import swaggerUi from 'swagger-ui-express';
 import swaggerDocument from './swagger'; 
-import feedBackRoutes from './routes/feedBackRoutes';
-import { initializeRooms } from './models/Room'; // Import the function
+import feedBackRoutes from './routes/feedBackRoutes';// Import the function
 dotenv.config();
 const app = express();
 const PORT = process.env.PORT || 3000;
@@ -18,7 +17,6 @@ const prisma = new PrismaClient();
 prisma.$connect()
   .then(() => {
     console.log('Connected to the database');
-    initializeRooms().catch(console.error); 
   })
   .catch(err  => console.error('Database connection error:', err));
 

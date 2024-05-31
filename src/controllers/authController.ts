@@ -11,12 +11,16 @@ const JWT_SECRET = process.env.JWT_SECRET;
 export const signup = async (req: Request, res: Response): Promise<void> => {
   try {
     const { username, email, password, role } = req.body;
+    const existingEmail = await findUserByEmail(email);
+    if(existingEmail) {
+      res.status(409).json({ error: 'Email already exists' });
+      return;
+    }
     const hashedPassword = await bcrypt.hash(password, 10);
     const user = await createUser({ username, email, password: hashedPassword, role });
     res.status(201).json({ user });
 
   } catch (error) {
-    console.log(error)
     res.status(500).json({ error: (error as Error).message });
   }
 };
