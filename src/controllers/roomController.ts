@@ -56,6 +56,13 @@ export const setRoomAsOccupied = async (req: Request, res: Response) => {
   const roomNum = Number(roomNumber);
   const days = Number(numberOfDays);
 
+  const isOccupied = await findOccupiedRooms();
+  if (isOccupied) {
+    res.status(400).json({ error: 'Room is already occupied' });
+    return;
+  }
+
+
   if (isNaN(roomNum) || isNaN(days)) {
     res.status(400).json({ error: 'Invalid room number or number of days' });
     return;
@@ -101,24 +108,30 @@ export const setRoomAsFree = async (req: Request, res: Response) => {
 
 
 export const generateWeeklyReport = async (req: Request, res: Response) => {
-  // Fetch all rooms that are currently occupied
-  const occupiedRooms = await findOccupiedRooms();
+  // Fetch the date range from the request body
+  const { startDate, endDate } = req.body;
+
+  // Fetch all rooms that are occupied within the given date range
+  const occupiedRooms = await findOccupiedRooms(new Date(startDate), new Date(endDate));
 
   // Calculate the total price for each room and the total amount
   let totalAmount = 0;
-const roomReports = occupiedRooms.map((room: RoomDocument) => {
-  if (room.checkInDate && room.checkOutDate) {
-    const daysOccupied = Math.ceil((new Date(room.checkOutDate).getTime() - new Date(room.checkInDate).getTime()) / (1000 * 60 * 60 * 24));
-     const totalPrice = room.price * daysOccupied;
-    totalAmount += totalPrice;
 
-    return {
-      roomNumber: room.roomNumber,
-      price: room.price,
-      daysOccupied,
-      totalPrice,
-    };
-  });
+  const roomReports = occupiedRooms.map((room: RoomDocument) => {
+    const roomDoc = room as RoomDocument;
+    if (roomDoc.checkInDate && roomDoc.checkOutDate) {
+      const daysOccupied = Math.ceil((new Date(roomDoc.checkOutDate).getTime() - new Date(roomDoc.checkInDate).getTime()) / (1000 * 60 * 60 * 24));
+      const totalPrice = roomDoc.price * daysOccupied;
+      totalAmount += totalPrice;
+  
+      return {
+        roomNumber: roomDoc.roomNumber,
+        price: roomDoc.price,
+        daysOccupied,
+        totalPrice,
+      };
+    }
+  }).filter(Boolean);
 
   // Define the HTML content
   const htmlContent = `

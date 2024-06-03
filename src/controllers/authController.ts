@@ -4,7 +4,6 @@ import { createUser, findUserByEmail, comparePassword, UserDocument } from '../m
 import dotenv from 'dotenv';
 import bcrypt from 'bcrypt';
 dotenv.config();
-import { isAuthenticated } from '../Middleware/authsMiddleware';
 
 const JWT_SECRET = process.env.JWT_SECRET;
 

@@ -1,10 +1,11 @@
 import express from 'express';
-import { postRoom, getRoom, getRooms, removeRoom, setRoomAsOccupied, setRoomAsFree, removeAllRooms } from '../controllers/roomController';
+import { postRoom, getRoom, getRooms, removeRoom, setRoomAsOccupied, setRoomAsFree, removeAllRooms, generateWeeklyReport } from '../controllers/roomController';
 import { isAuthenticated, isAdmin } from '../Middleware/authsMiddleware';
 
 const router = express.Router();
 
 router.post('/rooms', isAuthenticated, isAdmin, postRoom);
+router.get('/rooms/report', generateWeeklyReport);
 router.get('/rooms/:roomNumber', getRoom);
 router.get('/rooms', getRooms);
 router.delete('/rooms/:id', isAuthenticated, isAdmin, removeRoom);
