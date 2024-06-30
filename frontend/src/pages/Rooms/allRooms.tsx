@@ -27,7 +27,7 @@ const AllRooms: React.FC = () => {
         {roomsData.map((room: Room) => (
             <div key={room.id} className={`border rounded-lg p-4 md:p-4 m-5 bg-[#e2e8f0] dark:bg-[#141a21f7] hover:bg-white ${room.status === 'Free' ? 'border-[#159b4647]' : 'border-[#ef444461]'}`}>
                 <div className='flex items-center'>
-                    <p className='text-2xl font-bold dark:text-white'>{room.name}</p>
+                    <p className='text-2xl font-bold'>{room.name}</p>
                 </div>
                 <div className="flex items-center justify-between mt-5 font-bold">
                 <span className='text-[#2b78ff]'>{room.price} Rwf</span>
