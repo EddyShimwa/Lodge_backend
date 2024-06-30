@@ -6,35 +6,35 @@ interface Room {
     name: string;
     status: string;
     price: number;
-  }
-  const getCurrentDate = (): string => {
+}
+
+const getCurrentDate = (): string => {
     const options: Intl.DateTimeFormatOptions = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' };
     return new Date().toLocaleDateString(undefined, options);
-  };
+};
 
 const OccupiedRooms: React.FC = () => {
     return (
-      <div className='w-1/2'>
-        <div className='flex justify-between'>
-          <h4 className='flex ml-3'>Occupied Rooms Page</h4>
-          <p className='flex mr-5'>{getCurrentDate()}</p>
+        <div className='w-full'>
+            <div className='flex justify-between items-center text-sm dark:text-white'>
+                <h4 className='flex ml-7 text-xl font-bold'>Occupied Rooms</h4>
+                <p className='flex mr-6 '>{getCurrentDate()}</p>
+            </div>
+            <div className="block md:grid grid-cols-3 gap-2">
+                {roomsData.filter((room: Room) => room.status === "Occupied").map(room => (
+                    <div key={room.id} className='border border-[#ef444461] rounded-lg p-4 md:p-4 m-5 bg-[#e2e8f0] dark:bg-[#141a21f7] hover:bg-white'>
+                        <div className='flex items-center'>
+                            <p className='text-2xl font-bold dark:text-white'>{room.name}</p>
+                        </div>
+                        <div className="flex items-center justify-between mt-5">
+                        <span className='text-[#2b78ff] font-bold'>{room.price} Rwf</span>
+                        <button className='border border-black text-[#ef4444a6] rounded-md p-1'>{room.status}</button>
+                        </div>
+                    </div>
+                ))}
+            </div>
         </div>
-        <div>
-          <ul className='w-full border'>
-            {roomsData.filter((room: Room) => room.status === "Occupied").map(room => (
-              <li key={room.id} className='border border-gray-400 rounded-lg p-2 m-2 relative bg-white'>
-                <div className='flex justify-between items-center'>
-                  <p className='font-bold text-lg'>{room.name}</p>
-                  <button className='bg-orange-400'>{room.status}</button>
-                </div>
-                <span className='absolute bottom-0 text-xs left-1/2 transform -translate-x-1/2 text-orange-700'>{room.status}</span>
-                <span className='absolute bottom-6 text-lg left-1/2 transform -translate-x-1/2'>{room.price} Rwf</span>
-              </li>
-            ))}
-          </ul>
-        </div>
-      </div>
     );
-  };
+};
 
-  export default OccupiedRooms;
+export default OccupiedRooms;

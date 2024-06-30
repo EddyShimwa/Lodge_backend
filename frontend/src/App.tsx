@@ -13,10 +13,10 @@ import Tables from './pages/Tables';
 import Alerts from './pages/UiElements/Alerts';
 import Buttons from './pages/UiElements/Buttons';
 import DefaultLayout from './layout/DefaultLayout';
-import Rooms from './pages/Form/Rooms';
 import FreeRooms from './pages/Rooms/availableRooms';
 import OccupiedRooms from './pages/Rooms/occupiedRooms';
 import AllRooms from './pages/Rooms/allRooms';
+import Report from './pages/report/report';
 
 function App() {
   const [loading, setLoading] = useState<boolean>(true);
@@ -63,12 +63,22 @@ function App() {
             </>
           }
         />
-        <Route
-          path="/tables"
+
+<Route
+          path="/forms/form-layout"
           element={
             <>
-              <PageTitle title="Tables | TailAdmin - Tailwind CSS Admin Dashboard Template" />
-              <Tables />
+              <PageTitle title="Form Layout | TailAdmin - Tailwind CSS Admin Dashboard Template" />
+              <FormLayout />
+            </>
+          }
+        />
+        <Route
+          path="/report"
+          element={
+            <>
+              <PageTitle title="Report | Kal Palace" />
+              <Report />
             </>
           }
         />
