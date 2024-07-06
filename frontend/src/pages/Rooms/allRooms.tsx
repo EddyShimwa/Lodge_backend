@@ -1,18 +1,19 @@
-import React from 'react';
-import roomsData from '../../allRoomsData.json'
-// import Dialog from '@material-ui/core/Dialog';
-// import DialogTitle from '@material-ui/core/DialogTitle';
-// import Snackbar from '@material-ui/core/Snackbar';
-// import DialogActions from '@material-ui/core/DialogActions';
-// import DialogContent from '@material-ui/core/DialogContent';
-// import DialogContentText from '@material-ui/core/DialogContentText';
-// import Button from '@material-ui/core/Button';
+import React, { useEffect, useState } from 'react';
+import roomsData from '../../allRoomsData.json';
 import { Room } from '../../types/room';
 
 export const getCurrentDate = (): string => {
   const options: Intl.DateTimeFormatOptions = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' };
   return new Date().toLocaleDateString(undefined, options);
 };
+
+// const [rooms, setRooms] = useState<Room[]>([]);
+
+// useEffect(() => {
+//   const 
+
+
+// }, []);
 
 const AllRooms: React.FC = () => {
 

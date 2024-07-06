@@ -9,7 +9,6 @@ import Chart from './pages/Chart';
 import ECommerce from './pages/Dashboard/ECommerce';
 import FormLayout from './pages/Form/FormLayout';
 import Settings from './pages/Settings';
-import Tables from './pages/Tables';
 import Alerts from './pages/UiElements/Alerts';
 import Buttons from './pages/UiElements/Buttons';
 import DefaultLayout from './layout/DefaultLayout';
@@ -17,6 +16,7 @@ import FreeRooms from './pages/Rooms/availableRooms';
 import OccupiedRooms from './pages/Rooms/occupiedRooms';
 import AllRooms from './pages/Rooms/allRooms';
 import Report from './pages/report/report';
+import SplashPage from './pages/splash';
 
 function App() {
   const [loading, setLoading] = useState<boolean>(true);
@@ -33,10 +33,22 @@ function App() {
   return loading ? (
     <Loader />
   ) : (
+    <>
+    <Routes>
+    <Route
+          index
+          element={
+            <>
+              <PageTitle title="Kal Palace" />
+              <SplashPage />
+            </>
+          }
+        />
+    </Routes>
     <DefaultLayout>
       <Routes>
         <Route
-          index
+          path="/admin/dashboard"
           element={
             <>
               <PageTitle title="eCommerce Dashboard | TailAdmin - Tailwind CSS Admin Dashboard Template" />
@@ -165,6 +177,7 @@ function App() {
         />
       </Routes>
     </DefaultLayout>
+    </>
   );
 }
 
