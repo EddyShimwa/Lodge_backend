@@ -1,5 +1,6 @@
-import { useEffect, useState } from 'react';
-import { Route, Routes, useLocation } from 'react-router-dom';
+import React, { useEffect, useState } from 'react';
+import { Route, Routes, useLocation, Navigate } from 'react-router-dom';
+import { useSelector } from 'react-redux';
 import Loader from './common/Loader';
 import PageTitle from './components/PageTitle';
 import SignIn from './pages/Authentication/SignIn';
@@ -17,6 +18,18 @@ import OccupiedRooms from './pages/Rooms/occupiedRooms';
 import AllRooms from './pages/Rooms/allRooms';
 import Report from './pages/report/report';
 import SplashPage from './pages/splash';
+import { RootState } from './redux/store';
+
+
+const PrivateRoute: React.FC<{ children: JSX.Element }> = ({ children }) => {
+  const { token } = useSelector((state: RootState) => state.signIn);
+
+  if (!token) {
+    return <Navigate to="/auth/signin" />;
+  }
+
+  return children;
+};
 
 function App() {
   const [loading, setLoading] = useState<boolean>(true);
@@ -30,103 +43,19 @@ function App() {
     setTimeout(() => setLoading(false), 1000);
   }, []);
 
+  const isAuthRoute = pathname === '/' || pathname === '/auth/signin';
+
   return loading ? (
     <Loader />
   ) : (
     <>
-    <Routes>
-    <Route
+      <Routes>
+        <Route
           index
           element={
             <>
               <PageTitle title="Kal Palace" />
               <SplashPage />
-            </>
-          }
-        />
-    </Routes>
-    <DefaultLayout>
-      <Routes>
-        <Route
-          path="/admin/dashboard"
-          element={
-            <>
-              <PageTitle title="eCommerce Dashboard | TailAdmin - Tailwind CSS Admin Dashboard Template" />
-              <ECommerce />
-            </>
-          }
-        />
-        <Route
-          path="/calendar"
-          element={
-            <>
-              <PageTitle title="Calendar | TailAdmin - Tailwind CSS Admin Dashboard Template" />
-              <Calendar />
-            </>
-          }
-        />
-
-        <Route
-          path="/forms/form-layout"
-          element={
-            <>
-              <PageTitle title="Form Layout | TailAdmin - Tailwind CSS Admin Dashboard Template" />
-              <FormLayout />
-            </>
-          }
-        />
-
-<Route
-          path="/forms/form-layout"
-          element={
-            <>
-              <PageTitle title="Form Layout | TailAdmin - Tailwind CSS Admin Dashboard Template" />
-              <FormLayout />
-            </>
-          }
-        />
-        <Route
-          path="/report"
-          element={
-            <>
-              <PageTitle title="Report | Kal Palace" />
-              <Report />
-            </>
-          }
-        />
-        <Route
-          path="/settings"
-          element={
-            <>
-              <PageTitle title="Settings | TailAdmin - Tailwind CSS Admin Dashboard Template" />
-              <Settings />
-            </>
-          }
-        />
-        <Route
-          path="/chart"
-          element={
-            <>
-              <PageTitle title="Basic Chart | TailAdmin - Tailwind CSS Admin Dashboard Template" />
-              <Chart />
-            </>
-          }
-        />
-        <Route
-          path="/ui/alerts"
-          element={
-            <>
-              <PageTitle title="Alerts | TailAdmin - Tailwind CSS Admin Dashboard Template" />
-              <Alerts />
-            </>
-          }
-        />
-        <Route
-          path="/ui/buttons"
-          element={
-            <>
-              <PageTitle title="Buttons | TailAdmin - Tailwind CSS Admin Dashboard Template" />
-              <Buttons />
             </>
           }
         />
@@ -139,46 +68,157 @@ function App() {
             </>
           }
         />
-        <Route
-          path="/auth/signup"
-          element={
-            <>
-              <PageTitle title="Signup | TailAdmin - Tailwind CSS Admin Dashboard Template" />
-              <SignUp />
-            </>
-          }
-        />
-        <Route
-          path="/all-rooms"
-          element={
-            <>
-              <PageTitle title="Rooms | TailAdmin - Tailwind CSS Admin Dashboard Template" />
-              <AllRooms />
-            </>
-          }
-        />
-        <Route
-          path="/free-rooms"
-          element={
-            <>
-              <PageTitle title="Free Rooms | TailAdmin - Tailwind CSS Admin Dashboard Template" />
-              <FreeRooms />
-            </>
-          }
-        />
-        <Route
-          path="/occupied-rooms"
-          element={
-            <>
-              <PageTitle title="Occupied Rooms | TailAdmin - Tailwind CSS Admin Dashboard Template" />
-              <OccupiedRooms />
-            </>
-          }
-        />
       </Routes>
-    </DefaultLayout>
+      {!isAuthRoute && (
+        <DefaultLayout>
+          <Routes>
+            <Route
+              path="/admin/dashboard"
+              element={
+                <PrivateRoute>
+                  <>
+                    <PageTitle title="eComm" />
+                    <ECommerce />
+                  </>
+                </PrivateRoute>
+              }
+            />
+            <Route
+              path="/receptionist/dashboard"
+              element={
+                <PrivateRoute>
+                  <>
+                    <PageTitle title="Receptionist Dashboard | TailAdmin - Tailwind CSS Admin Dashboard Template" />
+                    {/* Your Receptionist Dashboard Component */}
+                  </>
+                </PrivateRoute>
+              }
+            />
+            <Route
+              path="/calendar"
+              element={
+                <PrivateRoute>
+                  <>
+                    <PageTitle title="Calendar | TailAdmin - Tailwind CSS Admin Dashboard Template" />
+                    <Calendar />
+                  </>
+                </PrivateRoute>
+              }
+            />
+            <Route
+              path="/forms/form-layout"
+              element={
+                <PrivateRoute>
+                  <>
+                    <PageTitle title="Form Layout | TailAdmin - Tailwind CSS Admin Dashboard Template" />
+                    <FormLayout />
+                  </>
+                </PrivateRoute>
+              }
+            />
+            <Route
+              path="/report"
+              element={
+                <PrivateRoute>
+                  <>
+                    <PageTitle title="Report | Kal Palace" />
+                    <Report />
+                  </>
+                </PrivateRoute>
+              }
+            />
+            <Route
+              path="/settings"
+              element={
+                <PrivateRoute>
+                  <>
+                    <PageTitle title="Settings | TailAdmin - Tailwind CSS Admin Dashboard Template" />
+                    <Settings />
+                  </>
+                </PrivateRoute>
+              }
+            />
+            <Route
+              path="/chart"
+              element={
+                <PrivateRoute>
+                  <>
+                    <PageTitle title="Basic Chart | TailAdmin - Tailwind CSS Admin Dashboard Template" />
+                    <Chart />
+                  </>
+                </PrivateRoute>
+              }
+            />
+            <Route
+              path="/ui/alerts"
+              element={
+                <PrivateRoute>
+                  <>
+                    <PageTitle title="Alerts | TailAdmin - Tailwind CSS Admin Dashboard Template" />
+                    <Alerts />
+                  </>
+                </PrivateRoute>
+              }
+            />
+            <Route
+              path="/ui/buttons"
+              element={
+                <PrivateRoute>
+                  <>
+                    <PageTitle title="Buttons | TailAdmin - Tailwind CSS Admin Dashboard Template" />
+                    <Buttons />
+                  </>
+                </PrivateRoute>
+              }
+            />
+            <Route
+              path="/auth/signup"
+              element={
+                <>
+                  <PageTitle title="Signup | TailAdmin - Tailwind CSS Admin Dashboard Template" />
+                  <SignUp />
+                </>
+              }
+            />
+            <Route
+              path="/all-rooms"
+              element={
+                <PrivateRoute>
+                  <>
+                    <PageTitle title="Rooms | TailAdmin - Tailwind CSS Admin Dashboard Template" />
+                    <AllRooms />
+                  </>
+                </PrivateRoute>
+              }
+            />
+            <Route
+              path="/free-rooms"
+              element={
+                <PrivateRoute>
+                  <>
+                    <PageTitle title="Free Rooms | TailAdmin - Tailwind CSS Admin Dashboard Template" />
+                    <FreeRooms />
+                  </>
+                </PrivateRoute>
+              }
+            />
+            <Route
+              path="/occupied-rooms"
+              element={
+                <PrivateRoute>
+                  <>
+                    <PageTitle title="Occupied Rooms | TailAdmin - Tailwind CSS Admin Dashboard Template" />
+                    <OccupiedRooms />
+                  </>
+                </PrivateRoute>
+              }
+            />
+          </Routes>
+        </DefaultLayout>
+      )}
     </>
   );
 }
 
 export default App;
+``

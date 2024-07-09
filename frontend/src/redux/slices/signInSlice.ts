@@ -1,12 +1,9 @@
 import { createSlice, createAsyncThunk, PayloadAction } from '@reduxjs/toolkit';
 import axios from 'axios';
-import { jwtDecode } from 'jwt-decode';
-// import { showErrorToast, showSuccessToast } from '@/utils/ToastConfig';
 
 interface User {
-  _id: number;
-  firstName: string;
-  lastName: string;
+  id: string;
+  username: string;
   email: string;
   role: string;
 }
@@ -17,20 +14,12 @@ interface SignInState {
   loading: boolean;
   error: string | null;
   message: string | null;
-  role: string | null;
-}
-
-interface DecodedToken {
-  user: User;
 }
 
 interface LoginResponse {
-  token: string;
   message: string;
-  user: {
-    id: number;
-    email: string;
-  };
+  user: User;
+  token: string;
 }
 
 interface Credentials {
@@ -38,50 +27,36 @@ interface Credentials {
   password: string;
 }
 
+interface RejectValue {
+  message: string;
+}
+
 const tokenFromStorage = localStorage.getItem('token');
-
-let userFromToken: User | null = null;
-
+let userFromStorage: User | null = null;
 if (tokenFromStorage) {
-  try {
-    const decodedToken = jwtDecode<DecodedToken>(tokenFromStorage);
-    userFromToken = {
-      _id: decodedToken.user._id,
-      firstName: decodedToken.user.firstName,
-      lastName: decodedToken.user.lastName,
-      email: decodedToken.user.email,
-      role: decodedToken.user.role,
-    };
-  } catch (error) {
-    localStorage.removeItem('token');
-  }
+  const userString = localStorage.getItem('user');
+  userFromStorage = userString ? JSON.parse(userString) : null;
 }
 
 export const initialState: SignInState = {
   token: tokenFromStorage,
-  user: userFromToken,
+  user: userFromStorage,
   loading: false,
   error: null,
   message: null,
-  role: null
 };
 
-const apiUrl = `${process.env.VITE_BASE_URL}/user/login`;
-export const loginUser = createAsyncThunk<LoginResponse, Credentials>(
+const apiUrl = 'https://lodge-backend.onrender.com/api/auth/login';
+export const loginUser = createAsyncThunk<LoginResponse, Credentials, { rejectValue: RejectValue }>(
   'signIn/loginUser',
   async (credentials: Credentials, thunkAPI) => {
-    return axios
-      .post(apiUrl, credentials)
-      .then((response) => {
-        // showSuccessToast(response.data.message);
-        return response.data;
-      })
-      .catch((error) => {
-        // showErrorToast(error.response.data.message);
-        return thunkAPI.rejectWithValue(
-          error.response.data || 'An error occurred'
-        );
-      });
+    try {
+      const response = await axios.post(apiUrl, credentials);
+      return response.data;
+    } catch (error) {
+      let errorMessage = 'Invalid credentials';
+      return thunkAPI.rejectWithValue({ message: errorMessage });
+    }
   }
 );
 
@@ -91,70 +66,45 @@ const signInSlice = createSlice({
   reducers: {
     logout(state) {
       localStorage.removeItem('token');
+      localStorage.removeItem('user');
       return {
         ...state,
         token: null,
         user: null,
-        role: null,
         message: 'Logout Successfully',
       };
     },
-
   },
   extraReducers: (builder) => {
-    builder.addCase(loginUser.pending, (state) => {
-      return {
-        ...state,
-        loading: true,
-        error: null,
-        message: null,
-      };
-    });
-    builder.addCase(
-      loginUser.fulfilled,
-      (state, action: PayloadAction<LoginResponse>) => {
-        const newToken = action.payload.token;
-
-
-        localStorage.setItem('token', newToken!);
-
-        let decodedUser = null;
-        if (action.payload.token) {
-          const decodedData = jwtDecode<DecodedToken>(action.payload.token);
-          decodedUser = {
-           _id: decodedData.user._id,
-            firstName: decodedData.user.firstName,
-            lastName: decodedData.user.lastName,
-            email: decodedData.user.email,
-            role: decodedData.user.role,
-
-          };
-        }
-
-        return {
-          ...state,
-          loading: false,
-          message: action.payload.message,
-          token: newToken,
-          user: decodedUser,
-          role: jwtDecode<DecodedToken>(action.payload.token).user.role,
-
-        };
-      }
-    );
-    builder.addCase(loginUser.rejected, (state, action: PayloadAction<any>) => {
+    builder.addCase(loginUser.pending, (state) => ({
+      ...state,
+      loading: true,
+      error: null,
+      message: null,
+    }));
+    builder.addCase(loginUser.fulfilled, (state, action: PayloadAction<LoginResponse>) => {
+      const { token, user, message } = action.payload;
+      localStorage.setItem('token', token);
+      localStorage.setItem('user', JSON.stringify(user));
+    
       return {
         ...state,
         loading: false,
-        error: action.payload.message,
+        message,
+        token,
+        user,
+      };
+    });
+    builder.addCase(loginUser.rejected, (state, action) => {
+      return {
+        ...state,
+        loading: false,
+        error: action.payload ? action.payload.message : 'Login failed',
         message: null,
       };
     });
-
-
   },
 });
 
 export const { logout } = signInSlice.actions;
-
 export default signInSlice.reducer;
